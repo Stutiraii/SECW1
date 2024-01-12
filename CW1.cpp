@@ -39,6 +39,7 @@ public:
     }
 };
 
+
 class Book {
 public:
     Book(int bookId, const string& bookName, const string& authorFirstName,
@@ -90,6 +91,7 @@ private:
     int memberId;
     vector<Book> booksLoaned;
 };
+
 class Librarian {
 private:
     int staffId;
@@ -111,23 +113,6 @@ public:
     const string& getEmail() const { return email; }
     int getSalary() const { return salary; }
 
-   void addMember() {
-    // Implementation for adding a member
-    cout << "Enter member details:\n";
-    cout << "Enter your name: ";
-    cin >> name;
-    cout << "Enter your address: ";
-    cin >> address;
-    cout << "Enter your email: ";
-    cin >> email;
-
-    members.push_back(Member(memberIdCounter++, name, address, email));
-    cout << "Successfully registered new member.\n";
-    cout << "ID: " << memberIdCounter - 1 << "\n";
-    cout << "Name: " << name << "\n";
-    cout << "Address: " << address << "\n";
-    cout << "Email: " << email << "\n";
-}
 
     void issueBook(int memberId, int bookId) {
         // Implementation for issuing a book to a member
@@ -154,6 +139,24 @@ public:
     void setSalary(int newSalary) {
         salary = newSalary;
     }
+
+    void addMember() {
+    // Implementation for adding a member
+    cout << "Enter member details:\n";
+    cout << "Enter your name: ";
+    cin >> name;
+    cout << "Enter your address: ";
+    cin >> address;
+    cout << "Enter your email: ";
+    cin >> email;
+
+    members.push_back(Member(memberIdCounter++, name, address, email));
+    cout << "Successfully registered new member.\n";
+    cout << "ID: " << memberIdCounter - 1 << "\n";
+    cout << "Name: " << name << "\n";
+    cout << "Address: " << address << "\n";
+    cout << "Email: " << email << "\n";
+}
 };
 
 
@@ -166,30 +169,29 @@ int main() {
     // gather user input
     int userChoice = 0;
     int i = 0;
-   while (i < 6) {
+   do {
     cout << "Enter the choice: ";
     cin >> userChoice;
 
     switch (userChoice) {
         case 1:
-            cout << "[1]. Add a member\n";
             admin.addMember();
             break;
         case 2:
             cout << "[2]. Issue a book\n";
-          //  admin.issueBook();
+            // admin.issueBook();
             break;
         case 3:
             cout << "[3]. Return a book\n";
-            //admin.returnBook();
+            // admin.returnBook();
             break;
         case 4:
             cout << "[4]. Display borrowed books\n";
-           // admin.displayBorrowedBooks();
+            // admin.displayBorrowedBooks();
             break;
         case 5:
             cout << "[5]. Calculate fine\n";
-           // admin.calcFine();
+            // admin.calcFine();
             break;
         case 6:
             i = 6;
@@ -199,7 +201,7 @@ int main() {
             cout << "Invalid choice. Please enter a number between 1 and 6.\n";
     }
 
-    }
+    }while (userChoice !=6);
   
     return 0;
 }
