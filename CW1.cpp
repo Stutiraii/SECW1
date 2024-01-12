@@ -4,14 +4,12 @@
 
 using namespace std;
 
-class Member;
-
-struct Date {
+struct Date{
     int year;
     int month;
     int day;
 };
-
+class Member;
 class Person {
 private:
     string name;
@@ -58,23 +56,22 @@ public:
     int getSalary() const { return salary; }
 
     void addMember() {
-        cout << "Enter member details:\n";
         // Implementation for adding a member
     }
 
-    void issueBook() {
+    void issueBook(int memberId, int bookId) {
         // Implementation for issuing a book to a member
     }
 
-    void returnBook() {
+    void returnBook(int memberId, int bookId) {
         // Implementation for returning a book from a member
     }
 
-    void displayBorrowedBooks() {
+    void displayBorrowedBooks(int memberId) {
         // Implementation for displaying borrowed books of a member
     }
 
-    void calcFine() {
+    void calcFine(int memberId) {
         // Implementation for calculating fine for a member
     }
 
@@ -88,63 +85,104 @@ public:
         salary = newSalary;
     }
 };
-
 class Book {
 public:
-    // Implementation for the Book class
+    Book(int bookId, const string& bookName, const string& authorFirstName,
+        const string& authorLastName, const string& bookType, const Date& dueDate,
+        const string& borrower)
+        : bookId(bookId), bookName(bookName), authorFirstName(authorFirstName),
+        authorLastName(authorLastName), bookType(bookType), dueDate(dueDate), borrower(borrower) {}
+
+    int getBookId() const { return bookId; }
+    const string& getBookName() const { return bookName; }
+    const string& getAuthorFirstName() const { return authorFirstName; }
+    const string& getAuthorLastName() const { return authorLastName; }
+    const string& getBookType() const { return bookType; }
+    const Date& getDueDate() const { return dueDate; }
+    const string& getBorrower() const { return borrower; }
+
+    void returnBook() {
+        // Implementation for returning a book
+    }
+
+     void borrowBook(const Member& borrower, const Date& dueDate) {
+        // Implementation for borrowing a book
+    }
 
 private:
-    // Member variables for Book class
+     int bookId;
+    string bookName;
+    string authorFirstName;
+    string authorLastName;
+    string bookType;
+    Date dueDate;
+    string borrower;
 };
 
 class Member : public Person {
 public:
-    // Implementation for the Member class
+    Member(int memberId, const string& name, const string& address, const string& email)
+        : Person(name, address, email), memberId(memberId) {}
+
+    int getMemberId() const { return memberId; }
+
+    const vector<Book>& getBooksBorrowed() const { return booksLoaned; }
+
+    void setBooksBorrowed(const Book& book) {
+        booksLoaned.push_back(book);
+    }
 
 private:
-    // Member variables for Member class
+    int memberId;
+    vector<Book> booksLoaned;
 };
 
-int main() {
+int main(){
 
-    cout << "Welcome to the library system";
-    Librarian admin(1, "Stuti", "London", "stuti123@gmail.com", 8000);
+cout<<"Welcome to the library system\n";
+ Librarian admin(1, "Stuti", "London", "stuti123@gmail.com", 8000);
 
-    int userChoice = 0;
-    int i = 0;
-    while (i < 6) {
-        cout << "Enter the choice: ";
+ //load books (csv files)
+
+ //gather user input
+ int userChoice = 0;
+    while (userChoice < 5) {
+        cout << "Enter the choice: \n";
         cin >> userChoice;
 
         switch (userChoice) {
-            case 1:
-                cout << "[1]. Add a member\n";
-                admin.addMember();
-                break;
-            case 2:
-                cout << "[2]. Issue a book\n";
-                admin.issueBook();
-                break;
-            case 3:
-                cout << "[3]. Return a book\n";
-                admin.returnBook();
-                break;
-            case 4:
-                cout << "[4]. Display borrowed books\n";
-                admin.displayBorrowedBooks();
-                break;
-            case 5:
-                cout << "[5]. Calculate fine\n";
-                admin.calcFine();
-                break;
-            case 6:
-                i = 6;
-                cout << "[6]. Exit";
-                break;
-            default:
-                cout << "Invalid choice. Please enter a number between 1 and 6.\n";
+        case 1:
+            cout << "[1].add a member\n";
+            break;
+        case 2:
+            cout << "[2]. issue a book\n";
+            break;
+        case 3:
+            cout << "[3]. return book\n";
+            break;
+        case 4:
+            cout << "[4]. display borrowed books\n";
+            break;
+        case 5:
+            cout << "[5]. calculate fine\n";
+            break;
+        default:
+            cout << "[6]. Exit";
         }
+        // use switch statements for user input
     }
+
+    // input handling
+    admin.addMember();
 
     return 0;
 }
+
+//main function
+//create librarian
+//load books
+//gather user inputs 
+//handle the inputs
+
+
+//fill in the methods
