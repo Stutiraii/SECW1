@@ -3,6 +3,7 @@
 #include "catch.hpp"
 #include <chrono>
 #include <string>
+#include <iterator>
 #include <vector>
 #include <ctime>
 #include <thread>
@@ -10,7 +11,10 @@
 #include <sstream>
 
 // Forward declaration
+class Book;
 class Member;
+
+ std::vector<Book *> libraryBooks;
 
 // Struct for Date
 struct Date
@@ -179,14 +183,14 @@ private:
     std::string address;
     std::string email;
     int salary;
-    int memberIdCounter; // Member ID counter
+    int memberId; // Member ID counter
 
     std::vector<Member> members; // Vector to store members
     std::vector<Book> books;
 
 public:
     Librarian(int staffId, const std::string &name, const std::string &address, const std::string &email, int salary)
-        : staffId(staffId), name(name), address(address), email(email), salary(salary), memberIdCounter(0) {}
+        : staffId(staffId), name(name), address(address), email(email), salary(salary), memberId(0) {}
 
     int getStaffId() const { return staffId; }
     const std::string &getName() const { return name; }
@@ -205,14 +209,15 @@ public:
         std::cout << "Enter your email: ";
         std::cin >> email;
 
-        members.push_back(Member(memberIdCounter++, name, address, email));
+        members.push_back(Member(memberId, name, address, email));
+
         std::cout << "Successfully registered new member.\n";
-        std::cout << "ID: " << memberIdCounter - 1 << "\n";
+        std::cout << "ID: " << memberId << "\n";
         std::cout << "Name: " << name << "\n";
         std::cout << "Address: " << address << "\n";
         std::cout << "Email: " << email << "\n";
 
-        return memberIdCounter - 1;
+        return memberId++;
     }
 
     // Function to initialize books from CSV data
@@ -238,29 +243,35 @@ public:
         }
     }
 
-    // Function to issue a book to a member
-    void issueBook(int memberId, int bookId)
+// Function to issue a book to a member
+void issueBook(int memberId, int bookId)
+{
+    for (auto &member : members)
     {
-        // Implementation for issuing a book to a member
-        int tempMemberId;
-        int tempBookId;
-
-        std::cout << "Enter  Member Id\n";
-        std::cin >> tempMemberId;
-        if (tempMemberId != memberId)
+        if (member.getMemberId() == memberId)
         {
-            std::cout << "Invalid member\n";
-            return;
-        }
+            for (auto &book : libraryBooks)
+            {
+                if (book->getBookId() == bookId)
+                {
+                    // Calculate due date
+                    Date dueDate = addDays(getTodayDate(), 3); // Assuming 3 days checkout period
 
-        std::cout << "Enter Book Id\n";
-        std::cin >> tempBookId;
-        if (tempMemberId != memberId)
-        {
-            std::cout << "Invalid book ID\n";
-            return;
+                    // Update book details and member's borrowed books
+                    book->borrowBook(member, dueDate);
+                    member.setBooksBorrowed(*book);
+
+                    std::cout << "Book: " << book->getBookName() << " issued to Member : " <<getName() << "\n";
+                    std::cout << "Due Date: " << dueDate.year << "/" << dueDate.month << "/" << dueDate.day << "\n";
+                    break;
+                }
+            }
         }
     }
+}
+
+
+
 
     // Function to return a book from a member
     void returnBook(int memberId, int bookId)
@@ -314,8 +325,7 @@ int main()
     std::string bookName;
     int bookId;
     std::string authorFirstName, authorLastName;
-    std::vector<Book *> libraryBooks;
-    int memberIdCounter = 0;
+    // int memberId = 0;
 
     std::cout << "Welcome to the library system\n";
     Librarian admin(1, "Name", "Adress", "email@mail.com", 00);
@@ -348,12 +358,15 @@ int main()
     }
     // admin.initializeBooks(bookData);
 
+      // Variable to store the member ID
+    int memberId;
+
     // Modified loop for improved input handling
     int userChoice = 0;
     int i = 0;
     do
     {
-        std::cout << "Enter the choice: ";
+        std::cout << "Enter the choice: \n";
         std::cout << "[1]. Add a member\n";
         std::cout << "[2]. Issue a book\n";
         std::cout << "[3]. Return a book\n";
@@ -366,10 +379,14 @@ int main()
         switch (userChoice)
         {
         case 1:
-            memberIdCounter = admin.addMember();
+            memberId = admin.addMember();
             break;
         case 2:
-            admin.issueBook(memberIdCounter - 1, bookId);
+            std::cout<<"Enter memberId: ";
+            std::cin>>memberId;
+            std::cout<<"Enter bookID: ";
+            std::cin>>bookId;
+            admin.issueBook(memberId, bookId);
             break;
         case 3:
             // admin.returnBook();
@@ -378,7 +395,7 @@ int main()
             // admin.displayBorrowedBooks();
             break;
         case 5:
-            //  admin.calcFine(memberIdCounter-1);
+            //  admin.calcFine(memberId-1);
             break;
         case 6:
             i = 6;
