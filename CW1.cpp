@@ -79,10 +79,12 @@ public:
     Person(const std::string &name, const std::string &address, const std::string &email)
         : name(name), address(address), email(email) {}
 
+    // getter methods
     const std::string &getName() const { return name; }
     const std::string &getAddress() const { return address; }
     const std::string &getEmail() const { return email; }
 
+    // setter methods
     void setName(const std::string &newName)
     {
         name = newName;
@@ -118,6 +120,7 @@ public:
         : bookId(bookId), bookName(bookName), authorFirstName(authorFirstName),
           authorLastName(authorLastName), bookType(bookType), dueDate(dueDate), borrower(borrower) {}
 
+    // getter methods
     int getBookId() const { return bookId; }
     const std::string &getBookName() const { return bookName; }
     const std::string &getAuthorFirstName() const { return authorFirstName; }
@@ -159,7 +162,6 @@ public:
 // Class for a Member, derived from Person
 class Member : public Person
 {
-
 private:
     int memberId;
     std::vector<Book> booksLoaned;
@@ -218,6 +220,7 @@ public:
     Librarian(int staffId, const std::string &name, const std::string &address, const std::string &email, int salary)
         : staffId(staffId), name(name), address(address), email(email), salary(salary), memberId(0) {}
 
+    // getter methods
     int getStaffId() const { return staffId; }
     const std::string &getName() const { return name; }
     const std::string &getAddress() const { return address; }
@@ -252,11 +255,13 @@ public:
 
         members.push_back(Member(memberId, name, address, email));
 
+        std::cout << "-----------------------------------\n";
         std::cout << "Successfully registered new member.\n";
         std::cout << "ID: " << memberId << "\n";
         std::cout << "Name: " << name << "\n";
         std::cout << "Address: " << address << "\n";
         std::cout << "Email: " << email << "\n";
+        std::cout << "-----------------------------------\n";
     }
 
     // Function to initialize books from CSV data
@@ -384,7 +389,7 @@ public:
         std::cout << "Member ID " << memberId << " not found.\n";
     }
 
-    // Function to calculate fine for a member
+    // methods to calculate fine for a member
     void calcFine(int memberId)
     {
         for (auto &member : members)
@@ -413,13 +418,12 @@ public:
         }
     }
 
-    // Getter and Setter for staffId
+    // Setter methods
     void setStaffId(int newStaffId)
     {
         staffId = newStaffId;
     }
 
-    // Getter and Setter for salary
     void setSalary(int newSalary)
     {
         salary = newSalary;
@@ -440,9 +444,9 @@ int main()
     int bookId;
     std::string authorFirstName, authorLastName;
 
-    std::cout << "-----------------------------------";
+    std::cout << "-----------------------------------\n";
     std::cout << "Welcome to the library system\n";
-    std::cout << "-----------------------------------";
+    std::cout << "-----------------------------------\n";
     Librarian admin(1, "Name", "Adress", "email@mail.com", 00);
 
     if (!file.is_open())
@@ -480,6 +484,7 @@ int main()
     int userChoice = 0;
     do
     {
+        std::cout << "-----------------------------------\n";
         std::cout << "Enter the choice: \n";
         std::cout << "[1]. Add a member\n";
         std::cout << "[2]. Issue a book\n";
@@ -492,9 +497,12 @@ int main()
         switch (userChoice)
         {
         case 1:
+            std::cout << "-----------------------------------\n";
             admin.addMember();
+            std::cout << "-----------------------------------\n";
             break;
         case 2:
+            std::cout << "-----------------------------------\n";
             std::cout << "Enter memberId: ";
             std::cin >> memberId;
             std::cout << "Enter bookID: ";
@@ -502,6 +510,7 @@ int main()
             admin.issueBook(memberId, bookId);
             break;
         case 3:
+            std::cout << "-----------------------------------\n";
             std::cout << "Enter memberId: ";
             std::cin >> memberId;
             std::cout << "Enter bookID: ";
@@ -510,6 +519,7 @@ int main()
 
             break;
         case 4:
+            std::cout << "-----------------------------------\n";
             std::cout << "Enter memberId: ";
             std::cin >> memberId;
             admin.displayBorrowedBooks(memberId);
