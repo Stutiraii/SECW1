@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "catch.hpp"
 #include <chrono>
@@ -15,6 +14,7 @@ class Book;
 class Member;
 
 std::vector<Book *> libraryBooks;
+std::vector<Member> members; // Vector to store members
 
 // Struct for Date
 struct Date
@@ -66,6 +66,7 @@ struct BookData
 {
     std::vector<std::string> fields;
 };
+
 // Class for a Person
 class Person
 {
@@ -101,6 +102,15 @@ public:
 // Class for a Book
 class Book
 {
+private:
+    int bookId;
+    std::string bookName;
+    std::string authorFirstName;
+    std::string authorLastName;
+    std::string bookType;
+    Date dueDate;
+    std::string borrower;
+
 public:
     Book(int bookId, const std::string &bookName, const std::string &authorFirstName,
          const std::string &authorLastName, const std::string &bookType, const Date &dueDate,
@@ -121,10 +131,10 @@ public:
         // Implementation for returning a book
     }
 
-    void borrowBook(const Member &borrower, const Date &dueDate)
+    void borrowBook(const Member &member, const Date &dueDate)
     {
-        // Implementation for borrowing a book
     }
+
     double calculateFine(const Date &today, const Date &returnDate) const
     {
         if (returnDate.year > dueDate.year || (returnDate.year == dueDate.year && returnDate.month > dueDate.month) ||
@@ -141,15 +151,6 @@ public:
         // Book is not overdue, no fine
         return 0.0;
     }
-
-private:
-    int bookId;
-    std::string bookName;
-    std::string authorFirstName;
-    std::string authorLastName;
-    std::string bookType;
-    Date dueDate;
-    std::string borrower;
 };
 
 // Class for a Member, derived from Person
@@ -175,6 +176,7 @@ public:
     {
         booksLoaned.push_back(book);
     }
+
     void removeBook(int bookId)
     {
         // Find the book in the vector and remove it
@@ -204,8 +206,6 @@ private:
     std::string email;
     int salary;
     int memberId; // Member ID counter
-
-    std::vector<Member> members; // Vector to store members
     std::vector<Book> books;
 
 public:
@@ -218,8 +218,20 @@ public:
     const std::string &getEmail() const { return email; }
     int getSalary() const { return salary; }
 
+    Member *getMemberById(int memberId)
+    {
+        for (auto &member : members)
+        {
+            if (member.getMemberId() == memberId)
+            {
+                return &member;
+            }
+        }
+        return nullptr; // Member not found
+    }
+
     // Function to add a member
-    int addMember()
+    void addMember()
     {
         std::cout << "Enter member details:\n";
         std::cout << "Enter your name: ";
@@ -236,8 +248,6 @@ public:
         std::cout << "Name: " << name << "\n";
         std::cout << "Address: " << address << "\n";
         std::cout << "Email: " << email << "\n";
-
-        return memberId++;
     }
 
     // Function to initialize books from CSV data
@@ -290,39 +300,49 @@ public:
         }
     }
 
-    void returnBook(int memberId, int bookId)
+   void returnBook(int memberId, int bookId)
+{
+    for (auto &member : members)
     {
-        for (auto &member : members)
+        if (member.getMemberId() == memberId)
         {
-            if (member.getMemberId() == memberId)
+            bool bookFound = false;
+
+            for (auto &book : member.getBooksBorrowed())
             {
-                for (auto &book : member.getBooksBorrowed())
+                if (book.getBookId() == bookId)
                 {
-                    if (book.getBookId() == bookId)
+                    // Get today's date
+                    Date returnDate = getTodayDate();
+
+                    // Calculate fine before returning the book
+                    double fine = book.calculateFine(returnDate, returnDate);
+                    if (fine > 0.0)
                     {
-                        // Get today's date
-                        Date returnDate = getTodayDate();
-
-                        // Calculate fine before returning the book
-                        double fine = book.calculateFine(returnDate, returnDate);
-                        if (fine > 0.0)
-                        {
-                            std::cout << "Fine for overdue book: $" << fine << std::endl;
-                        }
-
-                        // Return the book
-                        book.returnBook();
-                        member.removeBook(bookId);
-
-                        std::cout << "Book returned by Member: " << member.getName() << "\n";
-                        break;
+                        std::cout << "Fine for overdue book: $" << fine << std::endl;
                     }
+
+                    // Return the book
+                    book.returnBook();
+                    member.removeBook(bookId);
+
+                    std::cout << "Book returned by Member: " << member.getName() << "\n";
+                    bookFound = true;
+                    break;
                 }
             }
+
+            if (!bookFound)
+            {
+                std::cout << "Book not found for Member: " << member.getName() << "\n";
+            }
+
+            break;
         }
     }
+}
 
-    // Function to display borrowed books of a member
+
     // Function to display borrowed books of a member
     void displayBorrowedBooks(int memberId)
     {
@@ -330,6 +350,7 @@ public:
         {
             if (member.getMemberId() == memberId)
             {
+                std::cout << "-----------------------------\n";
                 std::cout << "Borrowed books for Member ID " << memberId << ":\n";
                 const auto &borrowedBooks = member.getBooksBorrowed();
 
@@ -348,7 +369,7 @@ public:
                     }
                 }
 
-                return; // No need to continue searching for the member
+                return; 
             }
         }
 
@@ -356,26 +377,30 @@ public:
     }
 
     // Function to calculate fine for a member
-    void calcFine(const Member &member)
+    void calcFine(int memberId)
     {
-        std::cout << "Fine calculation for member " << member.getMemberId() << ":\n";
-
-        // Get today's date
-        Date today = getTodayDate();
-
-        // Iterate through the books borrowed by the member
-        for (const Book &book : member.getBooksBorrowed())
+        for (auto &member : members)
         {
-            // Assuming return date is the same as today when calculating fine for display
-            double fine = book.calculateFine(today, today);
+            if (member.getMemberId() == memberId)
+            {
 
-            if (fine > 0.0)
-            {
-                std::cout << "Book ID: " << book.getBookId() << ", Fine: $" << fine << std::endl;
-            }
-            else
-            {
-                std::cout << "Book ID: " << book.getBookId() << ", No fine incurred.\n";
+                // Get today's date
+                Date today = getTodayDate();
+
+                // Iterate through the books borrowed by the member
+                for (const Book &book : member.getBooksBorrowed())
+                {
+                    double fine = book.calculateFine(today, today);
+
+                    if (fine > 0.0)
+                    {
+                        std::cout << "Book ID: " << book.getBookId() << ", Fine: $" << fine << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "Book ID: " << book.getBookId() << ", No fine incurred.\n";
+                    }
+                }
             }
         }
     }
@@ -396,6 +421,7 @@ public:
 int main()
 {
     // load books (csv files)
+
     std::string filename;
     filename = "library_books.csv";
     // Read CSV file and get the book data
@@ -405,12 +431,9 @@ int main()
     std::string bookName;
     int bookId;
     std::string authorFirstName, authorLastName;
-    // int memberId = 0;
 
     std::cout << "Welcome to the library system\n";
     Librarian admin(1, "Name", "Adress", "email@mail.com", 00);
-
-    Date today = getTodayDate();
 
     if (!file.is_open())
     {
@@ -436,14 +459,12 @@ int main()
         // Create a Book object and add it to the vector
         libraryBooks.push_back(new Book(bookId, bookName, authorFirstName, authorLastName, "", Date(), ""));
     }
-    // admin.initializeBooks(bookData);
 
     // Variable to store the member ID
     int memberId;
 
     // Modified loop for improved input handling
     int userChoice = 0;
-    int i = 0;
     do
     {
         std::cout << "Enter the choice: \n";
@@ -458,7 +479,7 @@ int main()
         switch (userChoice)
         {
         case 1:
-            memberId = admin.addMember();
+            admin.addMember();
             break;
         case 2:
             std::cout << "Enter memberId: ";
@@ -487,7 +508,7 @@ int main()
             std::cout << "Invalid choice. Please enter a number between 1 and 6.\n";
         }
 
-    } while (userChoice != 6);
+    } while (userChoice != 5);
 
     return 0;
 };
